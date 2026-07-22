@@ -62,7 +62,7 @@ export function seedDB() {
       name: f.name,
       tagline: f.tagline,
       email: f.onboarded === false ? '' : `${slug}@example.com`,
-      linkedin: f.onboarded === false ? '' : `https://www.linkedin.com/in/${slug}`,
+      linkedin: '',
       profileComplete: f.onboarded !== false,
       avatar: { ...f.avatar, shirt: SHIRTS[i % SHIRTS.length], bg: BGS[i % BGS.length] },
     }
