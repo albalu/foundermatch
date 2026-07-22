@@ -403,6 +403,36 @@ h2 {
   min-width: 26px;
   font-variant-numeric: tabular-nums;
 }
+.history-delta {
+  min-width: 32px;
+  font-size: 11.5px;
+  font-weight: 650;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.history-delta.down {
+  color: var(--danger);
+}
+.history-delta.up {
+  color: var(--ok);
+}
+.history-delete {
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font-size: 17px;
+  line-height: 1;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  cursor: pointer;
+  flex-shrink: 0;
+  align-self: center;
+}
+.history-delete:hover {
+  color: var(--danger);
+  background: var(--out-soft);
+}
 .history-note {
   flex: 1;
   color: var(--text);

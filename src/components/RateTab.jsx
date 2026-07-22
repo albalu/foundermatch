@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import Avatar from './Avatar'
 import {
-  cohortMembers, getScore, getHistory, recordScore,
+  cohortMembers, getScore, getHistory, recordScore, deleteScoreEntry,
   clampScore, fmtScore, MIN_SCORE, MAX_SCORE, STEP,
 } from '../lib/db'
+
+const fmtDelta = (d) => (d > 0 ? '+' : '') + (Number.isInteger(d) ? d : d.toFixed(1))
 
 // Ratings can be revisited at any time — before, during, or after any event.
 // Each change can carry a note so founders remember why they moved a score.
@@ -37,9 +39,12 @@ function FounderRow({ founder, db, me, update }) {
 
   const current = draft ?? saved
 
+  // Functional update so rapid taps can't read a stale draft and drop steps.
   const change = (delta) => {
-    const next = clampScore(current + delta)
-    setDraft(next === saved ? null : next)
+    setDraft((prev) => {
+      const next = clampScore((prev ?? saved) + delta)
+      return next === saved ? null : next
+    })
   }
 
   const save = () => {
@@ -50,6 +55,13 @@ function FounderRow({ founder, db, me, update }) {
 
   const cancel = () => {
     setDraft(null)
+    setNote('')
+  }
+
+  const removeEntry = (index) => {
+    if (!confirm('Delete this update and revert its score change?')) return
+    update((d) => deleteScoreEntry(d, me.pin, founder.pin, index))
+    setDraft(null) // the saved score just moved — drop any pending edit
     setNote('')
   }
 
@@ -96,15 +108,29 @@ function FounderRow({ founder, db, me, update }) {
 
       {showHistory && history.length > 0 && (
         <ul className="history">
-          {[...history].reverse().map((h, i) => (
-            <li key={i}>
-              <span className="history-score">{fmtScore(h.value)}</span>
-              <span className="history-note">{h.note || 'no note'}</span>
-              <span className="history-ts">
-                {new Date(h.ts).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
-              </span>
-            </li>
-          ))}
+          {history
+            .map((h, index) => ({ ...h, index }))
+            .reverse()
+            .map((h) => (
+              <li key={`${h.ts}-${h.index}`}>
+                <span className="history-score">{fmtScore(h.value)}</span>
+                <span className={'history-delta' + (h.delta < 0 ? ' down' : h.delta > 0 ? ' up' : '')}>
+                  {fmtDelta(h.delta ?? 0)}
+                </span>
+                <span className="history-note">{h.note || 'no note'}</span>
+                <span className="history-ts">
+                  {new Date(h.ts).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
+                </span>
+                <button
+                  className="history-delete"
+                  aria-label="Delete this update and revert its change"
+                  title="Delete this update and revert its change"
+                  onClick={() => removeEntry(h.index)}
+                >
+                  ×
+                </button>
+              </li>
+            ))}
         </ul>
       )}
     </div>
