@@ -126,6 +126,21 @@ describe('bulletproof reads and migration', () => {
     expect(getScore(db, 'a', 'b')).toBe(9)
   })
 
+  it('migrateDB scrubs seeded LinkedIn URLs but keeps user-entered ones', () => {
+    const db = {
+      scores: {},
+      users: {
+        '11111111': { pin: '11111111', name: 'Emma Sullivan', linkedin: 'https://www.linkedin.com/in/emma-sullivan' },
+        '22222222': { pin: '22222222', name: 'Wei Chen', linkedin: 'https://www.linkedin.com/in/my-real-handle-9' },
+        '33333333': { pin: '33333333', name: 'Priya Sharma', linkedin: '' },
+      },
+    }
+    migrateDB(db)
+    expect(db.users['11111111'].linkedin).toBe('')
+    expect(db.users['22222222'].linkedin).toBe('https://www.linkedin.com/in/my-real-handle-9')
+    expect(db.users['33333333'].linkedin).toBe('')
+  })
+
   it('migrateDB pulls out-of-bound cached values back into range', () => {
     const db = { scores: { a: { b: { value: 42, history: [{ value: 42, note: '', ts: 1 }] } } } }
     migrateDB(db)

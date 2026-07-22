@@ -27,6 +27,14 @@ export function loadDB() {
 // stored scores are guaranteed in bounds regardless of what was on disk.
 export function migrateDB(db) {
   if (!db?.scores) return db
+  // Scrub seeded LinkedIn URLs from previously stored data: early seeds
+  // shipped linkedin.com/in/<name-slug>, which resolve to real profiles.
+  // Only the exact seeded pattern is removed — anything a user typed stays.
+  for (const u of Object.values(db.users ?? {})) {
+    if (!u.linkedin || !u.name) continue
+    const slug = u.name.toLowerCase().replace(/[^a-z]+/g, '-').replace(/(^-|-$)/g, '')
+    if (u.linkedin === `https://www.linkedin.com/in/${slug}`) u.linkedin = ''
+  }
   for (const rated of Object.values(db.scores)) {
     for (const entry of Object.values(rated)) {
       let prev = DEFAULT_SCORE
