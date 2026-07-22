@@ -1,5 +1,7 @@
 # FounderMatch — proof of concept
 
+See the live site: https://vercel.com/albalus-projects/foundermatch
+
 Mobile-first React + Vite app that matches solo founders in a cohort (~20)
 through rated activities. Everyone rates everyone; ratings drive how teams are
 formed for each next event, and matches favor **mutual** interest. The POC
