@@ -1,0 +1,20 @@
+diff --git a/node_modules/edmonds-blossom/app/blossom.js b/node_modules/edmonds-blossom/app/blossom.js
+index b1de385..299f3c4 100644
+--- a/node_modules/edmonds-blossom/app/blossom.js
++++ b/node_modules/edmonds-blossom/app/blossom.js
+@@ -260,6 +260,7 @@ Edmonds.prototype.scanBlossom = function (v, w) {
+ };
+ 
+ Edmonds.prototype.addBlossom = function (base, k) {
++  var b, path;
+   var v = this.edges[k][0];
+   var w = this.edges[k][1];
+   var wt = this.edges[k][2];
+@@ -366,6 +367,7 @@ Edmonds.prototype.addBlossom = function (base, k) {
+ };
+ 
+ Edmonds.prototype.expandBlossom = function (b, endStage) {
++  var v;
+   //console.log('DEBUG: expandBlossom(' + b + ',' + endStage + ') ' + this.blossomChilds[b].toString());
+   for (var ii = 0; ii < this.blossomChilds[b].length; ii++) {
+     var s = this.blossomChilds[b][ii];
